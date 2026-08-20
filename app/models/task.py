@@ -4,18 +4,18 @@ from datetime import datetime, timezone
 from app.db.database import Base
 
 class Task(Base):
-    __tablename__ = "tasks" # Đã sửa tên bảng trùng lặp từ "users" thành "tasks"
+    __tablename__ = "tasks"
 
-    id = Column(Integer, primary_key=True, index=True) # Đã sửa id làm khóa chính chính
-    project_id = Column(Integer, ForeignKey("Projects.id"), nullable=True)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
     title = Column(VARCHAR(255), nullable=False)
-    description = Column(Text, nullable=False)
-    assignee_id = Column(Integer, ForeignKey("users.id"), nullable=True) # Đã sửa thành ForeignKey trỏ về users.id
-    status = Column(VARCHAR(50), nullable=False)
-    priority = Column(VARCHAR(50), nullable=False)
-    due_date = Column(DateTime, nullable=True)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    description = Column(Text, nullable=True)  # Mặc định NULL theo thiết kế
+    assignee_id = Column(Integer, ForeignKey("users.id"), nullable=True)  # Cho phép NULL
+    status = Column(VARCHAR(50), nullable=False)  # TODO / IN_PROGRESS / DONE
+    priority = Column(VARCHAR(50), nullable=False)  # LOW / MEDIUM / HIGH
+    due_date = Column(DateTime, nullable=True)  # Cho phép NULL
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
 
-    # Quan hệ
+    # Mối quan hệ
     project = relationship("Project", back_populates="tasks")
-    assignee = relationship("User", back_populates="assigned_tasks")
+    assignee = relationship("User", back_populates="tasks_assigned")

@@ -4,9 +4,9 @@ from app.schemas.user import UserResponse
 
 class TaskBase(BaseModel):
     title: str
-    description: str
-    status: str = "todo"
-    priority: str = "medium"
+    description: str | None = None  # Đã sửa thành Optional để cho phép NULL
+    status: str = "TODO"           
+    priority: str = "MEDIUM"
     due_date: datetime | None = None
 
 class TaskCreate(TaskBase):

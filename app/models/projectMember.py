@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, VARCHAR, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from datetime import datetime, timezone
 from app.db.database import Base
@@ -6,12 +6,12 @@ from app.db.database import Base
 class ProjectMember(Base):
     __tablename__ = "project_members"
 
-    id = Column(Integer, primary_key=True, index=True) # Thêm ID làm Primary Key
-    project_id = Column(Integer, ForeignKey("Projects.id"), nullable=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
-    role = Column(String(50), nullable=False)
-    joined_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    # Khoá chính hợp phần (Composite PK)
+    project_id = Column(Integer, ForeignKey("projects.id"), primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
+    role = Column(VARCHAR(50), nullable=False)  # OWNER / MEMBER
+    joined_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
 
-    # Quan hệ
+    # Mối quan hệ
     project = relationship("Project", back_populates="members")
-    user = relationship("User", back_populates="project_memberships")
+    user = relationship("User", back_populates="memberships")
