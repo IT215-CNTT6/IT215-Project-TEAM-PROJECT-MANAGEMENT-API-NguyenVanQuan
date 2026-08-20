@@ -2,7 +2,8 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 from app.models.user import User
 from app.schemas.user import UserCreate, UserLogin
-from app.cores.security import hash_password, verify_password
+from app.cores.security import hash_password, verify_password,BadRequestError
+
 
 def create_user(db: Session, user_data: UserCreate):
     """
@@ -28,10 +29,11 @@ def create_user(db: Session, user_data: UserCreate):
     # 4. Tạo User model instance mới, gán role_id (khóa ngoại) thay vì chuỗi role
     new_user = User(
         email=user_data.email,
-        hashed_password=hashed_pwd,
-        full_name = user_data.fullName,
-        role = user_data.role
-    )
+        password_hash=hashed_pwd,     
+        full_name=user_data.full_name, 
+        role=user_data.role,
+        is_active=user_data.is_active
+)
 
     # 5. Thêm vào session và lưu xuống DB
     db.add(new_user)
@@ -51,7 +53,7 @@ def authenticate_user(db: Session, user_data: UserLogin):
     user = db.query(User).filter(User.email == user_data.email).first()
 
     # 2. Kiểm tra user có tồn tại không VÀ mật khẩu có khớp không
-    if not user or not verify_password(user_data.password, user.hashed_password):
+    if not user or not verify_password(user_data.password, user.hash_password):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email hoặc mật khẩu không chính xác"

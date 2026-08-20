@@ -1,10 +1,10 @@
-from pydantic import BaseModel, EmailStr, ConfigDict
+from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 from typing import Optional
 
 # Base schema chứa các thông tin cơ bản
 class UserBase(BaseModel):
-    email: EmailStr
+    email: str
     full_name: str  # Đã chuyển lên đây để dùng chung cho Create/Response
 
 class UserCreate(UserBase):
@@ -13,11 +13,11 @@ class UserCreate(UserBase):
     is_active: bool = True
 
 class UserLogin(BaseModel):
-    email: EmailStr
+    email: str
     password: str
 
 class UserUpdate(BaseModel):
-    email: Optional[EmailStr] = None
+    email: Optional[str] = None
     full_name: Optional[str] = None  # Đã sửa fullName -> full_name
     password: Optional[str] = None
     is_active: Optional[bool] = None
