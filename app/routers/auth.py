@@ -1,16 +1,8 @@
 from fastapi import APIRouter, Depends, status, Form
 from sqlalchemy.orm import Session
-
-# Import Database Session
 from app.db.database import get_db
-
-# Import Schemas
 from app.schemas.user import UserCreate, UserLogin, UserResponse
-
-# Import Service (Lưu ý đặt đúng tên import service_user)
 from app.services import service_user
-
-# Import Security Helpers
 from app.cores.security import create_access_token
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
@@ -27,7 +19,6 @@ def register(
     """
     Đăng ký tài khoản bằng Form-Data.
     """
-    # Khởi tạo Pydantic Schema từ dữ liệu Form
     user_data = UserCreate(
         email=email, 
         password=password, 
@@ -35,23 +26,17 @@ def register(
         role=role
     )
     
-    # Sửa từ servie_user -> service_user
     new_user = service_user.create_user(db=db, user_data=user_data)
     return new_user
 
 
 @router.post("/login", status_code=status.HTTP_200_OK)
 def login(user_data: UserLogin, db: Session = Depends(get_db)):
-    """
-    Endpoint Đăng nhập bằng JSON request (email, password).
-    """
-    # Sửa từ servie_user -> service_user
+
     user = service_user.authenticate_user(db=db, user_data=user_data)
 
-    # Lấy role trực tiếp từ user model
     role_name = user.role
 
-    # Tạo JWT Access Token
     access_token = create_access_token(
         data={
             "sub": user.email, 

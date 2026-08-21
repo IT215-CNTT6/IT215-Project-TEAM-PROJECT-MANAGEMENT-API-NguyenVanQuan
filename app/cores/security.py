@@ -41,6 +41,8 @@ def setup_exception_handlers(app: FastAPI):
             }
         )
 
+
+
 def hash_password(password: str, cost_factor: int = 12) -> str:
     """
     Băm mật khẩu sử dụng thư viện bcrypt trực tiếp.
